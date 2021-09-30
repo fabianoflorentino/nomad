@@ -1,0 +1,47 @@
+---
+- name: Add Hashicorp Repo
+  yum_repository:
+    name: hashicorp
+    description: Hashicorp Stable - $basearch
+    baseurl: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
+    gpgcheck: yes
+    enabled: yes
+    gpgkey: https://rpm.releases.hashicorp.com/gpg
+
+- name: Get stats of the Nomad Download
+  package:
+    name: nomad
+    state: latest
+
+- name: Copy the Nomad configuration file
+  template:
+    src: nomad.hcl.j2
+    dest: /etc/nomad.d/nomad.hcl
+    backup: yes
+  notify: "Start the Nomad service"
+
+- name: "Ajust Certificates Permission"
+  file:
+    state: directory
+    path: "{{ path_certificate }}"
+    owner: nomad
+    group: nomad
+    recurse: yes
+    mode: 0644
+
+- name: "Ajust Directory Permission"
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: nomad
+    group: nomad
+    mode: 0755
+  loop:
+    - "{{ data_dir }}"
+    - "{{ path_certificate }}"
+
+- name: Start the Nomad service
+  service:
+    name: nomad
+    state: started
+    enabled: yes

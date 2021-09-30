@@ -1,0 +1,165 @@
+---
+# Packages for OpenSSL
+- name: Openssl Install and Update
+  yum:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - openssl
+    - openssl-libs
+
+# Validate Packages
+- name: "Check if OpenSSL is installed"
+  package_facts:
+    manager: "auto"
+
+# Create Directory for Certificates
+- name: Directory to CA
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+  loop:
+    - /vault/data/certificates
+    - /vault/data/certificates/ssl
+  when: 
+  - "'openssl' in ansible_facts.packages"
+  - "'openssl-libs' in ansible_facts.packages"
+
+### CA
+- name: Create private key with password protection
+  community.crypto.openssl_privatekey:
+    path: "{{ cert_path }}/{{ ca_file_key }}"
+    cipher: "auto"
+    size: "{{ key_size }}"
+    type: "{{ type_algorithm }}"
+    passphrase: "{{ secret_ca_passphrase }}"
+  delegate_to: "{{ groups['server'][0] }}"
+
+- name: Create certificate signing request (CSR) for CA certificate
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: "{{ cert_path }}/{{ ca_file_key }}"
+    privatekey_passphrase: "{{ secret_ca_passphrase }}"
+    common_name: "{{ common_name }}"
+    use_common_name_for_san: false  # since we do not specify SANs, don't use CN as a SAN
+    basic_constraints:
+      - 'CA:TRUE'
+    basic_constraints_critical: yes
+    key_usage:
+      - keyCertSign
+    key_usage_critical: true
+  delegate_to: "{{ groups['server'][0] }}"
+  register: ca_csr
+
+- name: Create self-signed CA certificate from CSR
+  community.crypto.x509_certificate:
+    path: "{{ cert_path }}/{{ ca_file_certificate }}"
+    csr_content: "{{ ca_csr.csr }}"
+    privatekey_path: "{{ cert_path }}/{{ ca_file_key }}"
+    privatekey_passphrase: "{{ secret_ca_passphrase }}"
+    provider: selfsigned
+  delegate_to: "{{ groups['server'][0] }}"
+
+
+### Server
+- name: Create private key for new certificate on "{{ groups['server'][0] }}"
+  community.crypto.openssl_privatekey:
+    path: "{{ cert_path}}/{{ server_file_key }}"
+  delegate_to: "{{ groups['server'][0] }}"
+  run_once: true
+
+- name: Create certificate signing request (CSR) for new certificate
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: "{{ cert_path}}/{{ server_file_key }}"
+    subject_alt_name:
+      - "{{ server_subject_alt_name.domain[0] }}"
+      - "{{ server_subject_alt_name.domain[1] }}"
+  delegate_to: "{{ groups['server'][0] }}"
+  run_once: true
+  register: server_certificate_csr
+
+- name: Sign certificate with our CA
+  community.crypto.x509_certificate_pipe:
+    csr_content: "{{ server_certificate_csr.csr }}"
+    provider: ownca
+    ownca_path: "{{ cert_path }}/{{ ca_file_certificate }}"
+    ownca_privatekey_path: "{{ cert_path }}/{{ ca_file_key }}"
+    ownca_privatekey_passphrase: "{{ secret_ca_passphrase }}"
+    ownca_not_after: +3650d  # valid for one year
+    ownca_not_before: "-1d"  # valid since yesterday
+  delegate_to: "{{ groups['server'][0] }}"
+  run_once: true
+  register: certificate
+
+- name: Write certificate file on "{{ groups['server'][0] }}"
+  copy:
+    dest: "{{ cert_path }}/{{ server_file_certificate }}"
+    content: "{{ certificate.certificate }}"
+  delegate_to: "{{ groups['server'][0] }}"
+  run_once: true
+
+
+### client
+- name: Create private key for new certificate on "{{ groups['server'][0] }}"
+  community.crypto.openssl_privatekey:
+    path: "{{ cert_path}}/{{ client_file_key }}"
+  delegate_to: "{{ groups['server'][0] }}"
+  run_once: true
+
+- name: Create certificate signing request (CSR) for new certificate
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: "{{ cert_path}}/{{ client_file_key }}"
+    subject_alt_name:
+      - "{{ client_subject_alt_name.domain[0] }}"
+      - "{{ client_subject_alt_name.domain[1] }}"
+  delegate_to: "{{ groups['server'][0] }}"
+  run_once: true
+  register: client_certificate_csr
+
+- name: Sign certificate with our CA
+  community.crypto.x509_certificate_pipe:
+    csr_content: "{{ client_certificate_csr.csr }}"
+    provider: ownca
+    ownca_path: "{{ cert_path }}/{{ ca_file_certificate }}"
+    ownca_privatekey_path: "{{ cert_path }}/{{ ca_file_key }}"
+    ownca_privatekey_passphrase: "{{ secret_ca_passphrase }}"
+    ownca_not_after: +3650d  # valid for one year
+    ownca_not_before: "-1d"  # valid since yesterday
+  delegate_to: "{{ groups['server'][0] }}"
+  run_once: true
+  register: certificate
+
+- name: Write certificate file on "{{ groups['server'][0] }}"
+  copy:
+    dest: "{{ cert_path }}/{{ client_file_certificate }}"
+    content: "{{ certificate.certificate }}"
+  delegate_to: "{{ groups['server'][0] }}"
+  run_once: true
+
+- name: Fetch certificate file from remote host
+  fetch:
+    src: "{{ item }}"
+    dest: "/tmp/{{ item }}"
+    flat: yes
+  loop:
+    - "{{ cert_path }}/{{ server_file_key }}"
+    - "{{ cert_path }}/{{ server_file_certificate }}"
+    - "{{ cert_path }}/{{ client_file_key }}"
+    - "{{ cert_path }}/{{ client_file_certificate }}"
+    - "{{ cert_path }}/{{ ca_file_certificate }}"
+  delegate_to: "{{ groups['server'][0] }}"
+
+- name: Copy server certificate file to hosts
+  copy:
+    src: "/tmp/{{ item }}"
+    dest: "{{ item }}"
+  loop:
+    - "{{ cert_path }}/{{ server_file_key }}"
+    - "{{ cert_path }}/{{ server_file_certificate }}"
+    - "{{ cert_path }}/{{ ca_file_certificate }}"
+  when:
+    - ("groups['server'][1] == inventory_hostname")
+    - ("groups['server'][2] == inventory_hostname")
+
+# - name: Debug
+#   debug:
+#     msg: "{{ groups['server'][0] }}"

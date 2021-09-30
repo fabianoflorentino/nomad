@@ -1,0 +1,35 @@
+---
+packages:
+  to_install:
+    - epel-release
+    - wget
+    - curl
+    - python2-pip
+    - https://cbs.centos.org/kojifiles/packages/python-docker/2.5.1/2.el7/noarch/python2-docker-2.5.1-2.el7.noarch.rpm
+    - net-tools
+    - bind-utils
+    - yum-utils
+    - ntp
+    - nc
+
+pip:
+  to_install:
+    - 'docker==4.4.4'
+    - 'cryptography==3.0.0'
+
+
+services:
+  to_enable:
+    - network
+    - vmtoolsd
+    - ntpd
+
+  to_disable:
+    - NetworkManager
+    - firewalld
+
+ntp_servers:
+  - "server 0.br.pool.ntp.org"
+  - "server 1.br.pool.ntp.org"
+  - "server 2.br.pool.ntp.org"
+  - "server 3.br.pool.ntp.org"

@@ -1,0 +1,9 @@
+authorityKeyIdentifier = {{ attr.authorityKeyIdentifier }}
+basicConstraints = {{ attr.basicConstraints }}
+keyUsage = {{ attr.keyUsage }}
+subjectAltName = {{ attr.subjectAltName }}
+
+[alt_names]
+{% for dns_name in attr.alt_names %}
+{{ dns_name }}
+{% endfor %}

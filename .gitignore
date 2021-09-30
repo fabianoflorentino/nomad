@@ -1,0 +1,5 @@
+inventories/*
+!inventories/sample
+*.DS_Store*
+keys/*
+!keys/ssh-keygen.sh

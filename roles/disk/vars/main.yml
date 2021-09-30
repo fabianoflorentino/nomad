@@ -1,0 +1,18 @@
+---
+device: "/dev/sdb"
+dev_size: "90g"
+vg_name: "nomad"
+lv_name: "data"
+logical_device: "/dev/nomad/data"
+dir_mount:
+  - "/nomad"
+  - "/nomad/data"
+path_mount: "/nomad/data"
+
+
+# pvcreate /dev/sdb
+# vgcreate data /dev/sdb
+# lvcreate -n ibm -L 25G data
+# mkfs.ext4 /dev/data/ibm
+# mkdir /ibm
+# mount /dev/data/ibm /ibm/

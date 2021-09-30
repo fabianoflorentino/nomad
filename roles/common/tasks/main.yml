@@ -1,0 +1,53 @@
+---
+- name: Update Instance
+  yum:
+    update_cache: yes
+    state: latest
+    name: '*'
+
+- name: Common Packages
+  yum:
+    state: present
+    name: "{{ item }}"
+  loop: "{{ packages.to_install }}"
+
+- name: Install Pip Modules
+  pip:
+    name: "{{ item }}"
+  loop: "{{ pip.to_install }}"
+
+- name: Configurando o Serviço NTP
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+    owner: root
+    mode: 0644
+  notify: "Restart NTP service"
+
+- name: Atualizando o Hostname dos Servidores
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Atualizando /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ hostvars[item]['ansible_host'] }} {{ hostvars[item]['inventory_hostname'] }}"
+  loop: "{{ groups['all'] }}"
+
+- name: Enable Services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  loop: "{{ services.to_enable }}"
+
+- name: Disabled Services
+  systemd:
+    name: "{{ item }}"
+    enabled: no
+    state: stopped
+  loop: "{{ services.to_disable }}"
+
+- name: Disable SELinux
+  selinux:
+    state: disabled

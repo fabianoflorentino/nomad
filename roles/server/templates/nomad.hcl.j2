@@ -1,0 +1,20 @@
+data_dir    = {{ data_dir }}
+bind_addr   = {{ bind_addr }}
+
+server {
+    enable  = {{ server_enable }}
+    bootstrap_expect = {{ bootstrap_expect }}
+    server_join {
+        retry_join = [
+            "{{ retry_join.to_join[0] }}:{{ bind_port }}",
+            "{{ retry_join.to_join[1] }}:{{ bind_port }}",
+            "{{ retry_join.to_join[2] }}:{{ bind_port }}"
+        ]
+        retry_max = {{ retry_max }}
+        reytry_interval = {{ retry_interval }}
+    }
+}
+
+client {
+    enable = {{ client_enable }}
+}

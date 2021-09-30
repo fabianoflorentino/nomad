@@ -1,0 +1,28 @@
+---
+
+# All
+cert_path: "/vault/data/certificates/ssl"
+
+# CA Configuration
+key_size: 4096
+type_algorithm: "RSA"
+secret_ca_passphrase: "83a4bb4e318c40f8147692c24b74d53566ac720fb439f42c53b2a19f8bb4def9"
+ca_file_key: "ca.key"
+ca_file_certificate: "ca.pem"
+common_name: "Vault CA"
+
+# Server Configuration
+server_file_key: "server.key"
+server_file_certificate: "server.pem"
+server_subject_alt_name:
+  domain:
+    - "DNS:*.lab.local"
+    - "DNS:server.dc1.vault"
+
+# Client Configuration
+client_file_key: "client.key"
+client_file_certificate: "client.pem"
+client_subject_alt_name:
+  domain:
+    - "DNS:*.lab.local"
+    - "DNS:client.dc1.vault"
