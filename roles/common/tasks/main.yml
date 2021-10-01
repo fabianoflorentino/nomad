@@ -31,7 +31,7 @@
 - name: Atualizando /etc/hosts
   lineinfile:
     path: /etc/hosts
-    line: "{{ hostvars[item]['ansible_host'] }} {{ hostvars[item]['inventory_hostname'] }}"
+    line: "{{ hostvars[item]['ansible_host'] }} {{ hostvars[item]['inventory_hostname'] }} {{ hostvars[item]['inventory_hostname'] }}.global"
   loop: "{{ groups['all'] }}"
 
 - name: Enable Services

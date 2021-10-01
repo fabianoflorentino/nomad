@@ -19,8 +19,8 @@
     state: directory
     path: "{{ item }}"
   loop:
-    - /vault/data/certificates
-    - /vault/data/certificates/ssl
+    - /nomad/data/certificates
+    - /nomad/data/certificates/ssl
   when: 
   - "'openssl' in ansible_facts.packages"
   - "'openssl-libs' in ansible_facts.packages"

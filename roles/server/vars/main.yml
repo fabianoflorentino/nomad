@@ -2,16 +2,17 @@
 data_dir: "/nomad/data"
 bind_addr: "0.0.0.0"
 bind_port: "4648"
+log_level: "INFO"
 server_enable: "true"
 client_enable: "false"
 bootstrap_expect: "3"
-retry_join:
-  to_join:
-    - "{{ groups['server'][0] }}"
-    - "{{ groups['server'][1] }}"
-    - "{{ groups['server'][2] }}"
 retry_max: 3
 retry_interval: 5s
+
+tls_http: "true"
+tls_rpc: "true"
+verify_server_hostname: "true"
+verify_https_client: "false"
 
 path_certificate: "/nomad/data/certificates/ssl"
 ca_file: "{{ path_certificate }}/ca.pem"

@@ -1,20 +1,33 @@
-data_dir    = {{ data_dir }}
-bind_addr   = {{ bind_addr }}
+data_dir  = "{{ data_dir }}"
+bind_addr = "{{ bind_addr }}"
+log_level = "{{ log_level }}"
 
 server {
-    enable  = {{ server_enable }}
+    enabled  = {{ server_enable }}
     bootstrap_expect = {{ bootstrap_expect }}
     server_join {
         retry_join = [
-            "{{ retry_join.to_join[0] }}:{{ bind_port }}",
-            "{{ retry_join.to_join[1] }}:{{ bind_port }}",
-            "{{ retry_join.to_join[2] }}:{{ bind_port }}"
+        {% for item in groups['all'] %}
+            "{{ hostvars[item]['inventory_hostname'] }}:{{ bind_port }}",
+        {% endfor %}
         ]
-        retry_max = {{ retry_max }}
-        reytry_interval = {{ retry_interval }}
+        retry_max      = {{ retry_max }}
+        retry_interval = "{{ retry_interval }}"
     }
 }
 
+tls {
+    http      = {{ tls_http }}
+    rpc       = {{ tls_rpc }}
+    ca_file   = "{{ ca_file }}"
+    cert_file = "{{ cert_file }}"
+    key_file  = "{{ key_file }}"
+
+    verify_server_hostname = {{ verify_server_hostname }}
+    verify_https_client    = {{ verify_https_client }}
+
+}
+
 client {
-    enable = {{ client_enable }}
+    enabled = {{ client_enable }}
 }
