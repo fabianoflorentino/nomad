@@ -1,0 +1,46 @@
+data_dir   = "{{ data_dir }}"
+bind_addr  = "{{ bind_addr }}"
+log_level  = "{{ log_level }}"
+datacenter = "{{ datacenter }}"
+region     = "{{ region }}"
+
+client {
+    
+    enabled = {{ client_enabled }}
+    
+    host_volume "client" {
+        path      = "{{ data_dir }}"
+        read_only = false
+    }
+
+    server_join {
+        retry_join = [
+    {% for item in groups['server'] %}
+        "{{ hostvars[item]['inventory_hostname'] }}:{{ bind_port }}",
+    {% endfor %}
+        ]
+        retry_max      = {{ retry_max }}
+        retry_interval = "{{ retry_interval }}"
+    }
+    
+    options = {
+        "drivers.allowlist" = "{{ client_driver_allowlist }}"
+    }
+}
+
+tls {
+    
+    http      = {{ tls_http }}
+    rpc       = {{ tls_rpc }}
+    ca_file   = "{{ ca_file }}"
+    cert_file = "{{ cert_file }}"
+    key_file  = "{{ key_file }}"
+
+    verify_server_hostname = {{ verify_server_hostname }}
+    verify_https_client    = {{ verify_https_client }}
+
+}
+
+server {
+    enabled = {{ server_enabled }}
+}

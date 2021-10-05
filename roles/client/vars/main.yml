@@ -1,0 +1,24 @@
+---
+data_dir: "/nomad/data"
+host_volume_path: 
+  - "/nomad/data/client"
+  - "/nomad/data/plugins"
+client_driver_allowlist: "docker,exec"
+bind_addr: "0.0.0.0"
+bind_port: "4647"
+log_level: "INFO"
+server_enabled: "false"
+client_enabled: "true"
+bootstrap_expect: "3"
+retry_max: 3
+retry_interval: 5s
+
+tls_http: "true"
+tls_rpc: "true"
+verify_server_hostname: "true"
+verify_https_client: "false"
+
+path_certificate: "/nomad/data/certificates/ssl"
+ca_file: "{{ path_certificate }}/ca.pem"
+cert_file: "{{ path_certificate }}/client.pem"
+key_file: "{{ path_certificate }}/client.key"
