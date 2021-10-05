@@ -1,15 +1,17 @@
-data_dir  = "{{ data_dir }}"
-bind_addr = "{{ bind_addr }}"
-log_level = "{{ log_level }}"
+data_dir   = "{{ data_dir }}"
+bind_addr  = "{{ bind_addr }}"
+log_level  = "{{ log_level }}"
+datacenter = "{{ datacenter }}"
+region     = "{{ region }}"
 
 server {
-    enabled  = {{ server_enable }}
+    enabled          = {{ server_enabled }}
     bootstrap_expect = {{ bootstrap_expect }}
     server_join {
         retry_join = [
-        {% for item in groups['all'] %}
-            "{{ hostvars[item]['inventory_hostname'] }}:{{ bind_port }}",
-        {% endfor %}
+    {% for item in groups['server'] %}
+        "{{ hostvars[item]['inventory_hostname'] }}:{{ bind_port }}",
+    {% endfor %}
         ]
         retry_max      = {{ retry_max }}
         retry_interval = "{{ retry_interval }}"
@@ -29,5 +31,5 @@ tls {
 }
 
 client {
-    enabled = {{ client_enable }}
+    enabled = {{ client_enabled }}
 }
