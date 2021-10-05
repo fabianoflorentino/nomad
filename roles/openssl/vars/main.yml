@@ -15,13 +15,13 @@ server_file_key: "server.key"
 server_file_certificate: "server.pem"
 server_subject_alt_name:
   domain:
-    - "DNS:server.global.nomad"
-    - "DNS:*.lab.local.global"
+    - "DNS:server.{{ region }}.nomad"
+    - "DNS:*.lab.local.{{ region }}"
 
 # Client Configuration
 client_file_key: "client.key"
 client_file_certificate: "client.pem"
 client_subject_alt_name:
   domain:
-    - "DNS:client.global.nomad"
-    - "DNS:*.lab.local"
+    - "DNS:client.{{ region }}.nomad"
+    - "DNS:*.lab.local.{{ region }}"
