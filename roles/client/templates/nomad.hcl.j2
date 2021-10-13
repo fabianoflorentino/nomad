@@ -13,6 +13,7 @@ client {
         read_only = false
     }
 
+{% if consul_integration == "false" %}
     server_join {
         retry_join = [
     {% for item in groups['server'] %}
@@ -26,7 +27,19 @@ client {
     options = {
         "drivers.allowlist" = "{{ client_driver_allowlist }}"
     }
+{% endif %}
 }
+
+{% if consul_integration == "true" %}
+consul {
+    address             = "{{ consul_address }}"
+    server_service_name = "{{ consul_server_service_name }}"
+    client_service_name = "{{ consul_client_service_name }}"
+    auto_advertise      = {{ consul_auto_advertise }}
+    server_auto_join    = {{ consul_server_auto_join }}
+    client_auto_join    = {{ consul_client_auto_join }}
+}
+{% endif %}
 
 tls {
     
