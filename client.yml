@@ -1,5 +1,5 @@
 ---
-- name: Setup Vault
+- name: Setup Nomad Client
   hosts:
     - client
   gather_facts: True
