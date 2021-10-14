@@ -175,7 +175,7 @@ client {
 | openssl | generate self-signed certificates for servers and clients |
 | server | create cluster of nomad |
 
-**OBS**: Require aditional disk sdb. [**./roles/disk/vars/main.yml**](./roles/disk/vars/main.yml)
+**OBS**: Require aditional disk. [**./roles/disk/vars/main.yml**](./roles/disk/vars/main.yml)
 
 ```yaml
 ---
