@@ -224,6 +224,8 @@ client {
   - [x] "Ajust Directory Permission"
   - [x] Start the Nomad service
 
+### **run**
+
 ```shell
 ansible-playbook -i inventories/<YOUR INVENTORY>/hosts.yml server.yml
 ```
