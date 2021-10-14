@@ -8,8 +8,8 @@
 - [3] Servers # This is a list of hardware tested on a virtual machine
   - [x] Hardware:
     - [x] 2 vCPU
-    - [x] 2 GB+ RAM
-    - [x] 500 GB+ disk space
+    - [x] 2 GB RAM
+    - [x] 2 disk, Operating System (sda) and Data disk (sdb)
 
 ## **Pre tasks**
 
@@ -175,6 +175,21 @@ client {
 | openssl | generate self-signed certificates for servers and clients |
 | server | create cluster of nomad |
 
+**OBS**: Require aditional disk sdb. [**./roles/disk/vars/main.yml**](./roles/disk/vars/main.yml)
+
+```yaml
+---
+device: "/dev/sdb"
+dev_size: "90g"
+vg_name: "nomad"
+lv_name: "data"
+logical_device: "/dev/nomad/data"
+dir_mount:
+  - "/nomad"
+  - "/nomad/data"
+path_mount: "/nomad/data"
+```
+
 - [x] [**disk**](./roles/disk)
   - [x] Enable LVM 2
   - [x] Create new Volume Group
@@ -229,3 +244,5 @@ client {
 ```shell
 ansible-playbook -i inventories/<YOUR INVENTORY>/hosts.yml server.yml
 ```
+
+## **Client Configuration**
