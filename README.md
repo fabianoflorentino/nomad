@@ -79,7 +79,8 @@ all:
         nomad-worker-3.lab.local:
 ```
 
-## **Server Configuration**
+<details>
+  <summary><b>Server Configuration</b> <em>(Details)</em></summary>
 
 - Insert your information on [**./role/server/vars/main.yml**](./role/server/vars/main.yml):
 
@@ -244,5 +245,7 @@ path_mount: "/nomad/data"
 ```shell
 ansible-playbook -i inventories/<YOUR INVENTORY>/hosts.yml server.yml
 ```
+
+</details>
 
 ## **Client Configuration**
