@@ -82,9 +82,9 @@ all:
 <details>
   <summary><b>Server Configuration</b> <em>(Details)</em></summary>
 
-- Insert your information on [**./role/server/vars/main.yml**](./roles/server/vars/main.yml):
+- Insert your information on [**./roles/server/vars/main.yml**](./roles/server/vars/main.yml):
 
-This variables are used on configuration file [**./role/server/templates/nomad.hcl.j2**](./roles/server/templates/nomad.hcl.j2).
+This variables are used on configuration file [**./roles/server/templates/nomad.hcl.j2**](./roles/server/templates/nomad.hcl.j2).
 
 | **Variables** | **Description** |
 | --- | --- |
@@ -251,9 +251,9 @@ ansible-playbook -i inventories/<YOUR INVENTORY>/hosts.yml server.yml
 <details>
   <summary><b>Client Configuration</b> <em>(Details)</em></summary>
 
-- Insert your information on [**./role/client/vars/main.yml**](./roles/client/vars/main.yml):
+- Insert your information on [**./roles/client/vars/main.yml**](./roles/client/vars/main.yml):
 
-This variables are used on configuration file [**./role/client/templates/nomad.hcl.j2**](./roles/client/templates/nomad.hcl.j2).
+This variables are used on configuration file [**./roles/client/templates/nomad.hcl.j2**](./roles/client/templates/nomad.hcl.j2).
 
 | **Variables** | **Description** |
 | --- | --- |
