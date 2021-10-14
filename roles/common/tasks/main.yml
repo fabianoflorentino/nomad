@@ -16,7 +16,7 @@
     name: "{{ item }}"
   loop: "{{ pip.to_install }}"
 
-- name: Configurando o Serviço NTP
+- name: Configuration NTP Service
   template:
     src: ntp.conf.j2
     dest: /etc/ntp.conf
@@ -24,11 +24,11 @@
     mode: 0644
   notify: "Restart NTP service"
 
-- name: Atualizando o Hostname dos Servidores
+- name: "Update the hostsname"
   hostname:
     name: "{{ inventory_hostname }}"
 
-- name: Atualizando /etc/hosts
+- name: Update /etc/hosts
   lineinfile:
     path: /etc/hosts
     line: "{{ hostvars[item]['ansible_host'] }} {{ hostvars[item]['inventory_hostname'] }} {{ hostvars[item]['inventory_hostname'] }}.{{ region }}"
