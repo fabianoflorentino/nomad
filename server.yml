@@ -1,5 +1,5 @@
 ---
-- name: Setup Vault
+- name: Setup Nomad Cluster
   hosts:
     - server
   gather_facts: True
